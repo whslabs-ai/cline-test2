@@ -1,6 +1,6 @@
 # Features
 1. Single page html (not `localStorage`) which could be save
-2. Can keep check of unfinished items
+2. Can keep track of unfinished items
 3. Have multiple categories
 4. Add category textbox and button
 5. Each category can add items, add item textbox and button
