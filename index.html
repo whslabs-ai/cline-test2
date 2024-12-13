@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unfinished</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .category { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+        .item { margin-left: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Unfinished</h1>
+    <div id="app">
+        <div id="categories">
+            <div class="category">
+                <h2>Movies</h2>
+                <ul class="items">
+                    <li class="item">Watch Oppenheimer <button class="removeItem">Remove</button></li>
+                </ul>
+                <input type="text" placeholder="Add item" class="addItemText">
+                <button class="addItemButton">Add Item</button>
+                <button class="removeCategory">Remove Category</button>
+            </div>
+        </div>
+        <input type="text" placeholder="Add category" id="addCategoryText">
+        <button id="addCategoryButton">Add Category</button>
+    </div>
+    <script>
+        const app = document.getElementById('app');
+        const categoriesDiv = document.getElementById('categories');
+        const addCategoryText = document.getElementById('addCategoryText');
+        const addCategoryButton = document.getElementById('addCategoryButton');
+
+        let categories = [];
+
+        function loadCategoriesFromHTML() {
+            const categoryElements = categoriesDiv.querySelectorAll('.category');
+            categories = Array.from(categoryElements).map(categoryElement => {
+                const name = categoryElement.querySelector('h2').textContent;
+                const itemElements = categoryElement.querySelectorAll('.item');
+                const items = Array.from(itemElements).map(itemElement => itemElement.textContent.replace('Remove', '').trim());
+                return { name, items };
+            });
+        }
+
+        function renderCategories() {
+            categoriesDiv.innerHTML = '';
+            categories.sort((a, b) => a.name.localeCompare(b.name));
+            categories.forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.classList.add('category');
+
+                const h2 = document.createElement('h2');
+                h2.textContent = category.name;
+                categoryDiv.appendChild(h2);
+
+                const ul = document.createElement('ul');
+                ul.classList.add('items');
+                category.items.sort().forEach(item => {
+                    const li = document.createElement('li');
+                    li.classList.add('item');
+                    li.textContent = item;
+                    const removeButton = document.createElement('button');
+                    removeButton.textContent = 'Remove';
+                    removeButton.classList.add('removeItem');
+                    removeButton.onclick = () => {
+                        category.items = category.items.filter(i => i !== item);
+                        renderCategories();
+                    };
+                    li.appendChild(removeButton);
+                    ul.appendChild(li);
+                });
+                categoryDiv.appendChild(ul);
+
+                const addItemText = document.createElement('input');
+                addItemText.type = 'text';
+                addItemText.placeholder = 'Add item';
+                addItemText.classList.add('addItemText');
+                categoryDiv.appendChild(addItemText);
+
+                const addItemButton = document.createElement('button');
+                addItemButton.textContent = 'Add Item';
+                addItemButton.classList.add('addItemButton');
+                addItemButton.onclick = () => {
+                    const newItem = addItemText.value.trim();
+                    if (newItem) {
+                        category.items.push(newItem);
+                        addItemText.value = '';
+                        renderCategories();
+                    }
+                };
+                categoryDiv.appendChild(addItemButton);
+
+                const removeCategoryButton = document.createElement('button');
+                removeCategoryButton.textContent = 'Remove Category';
+                removeCategoryButton.classList.add('removeCategory');
+                removeCategoryButton.onclick = () => {
+                    categories = categories.filter(c => c !== category);
+                    renderCategories();
+                };
+                categoryDiv.appendChild(removeCategoryButton);
+
+                categoriesDiv.appendChild(categoryDiv);
+            });
+        }
+
+        addCategoryButton.onclick = () => {
+            const newCategoryName = addCategoryText.value.trim();
+            if (newCategoryName) {
+                categories.push({ name: newCategoryName, items: [] });
+                addCategoryText.value = '';
+                renderCategories();
+            }
+        };
+
+        loadCategoriesFromHTML();
+        renderCategories();
+    </script>
+</body>
+</html>
